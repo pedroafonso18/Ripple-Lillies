@@ -37,7 +37,7 @@ pub fn setup_lilies(
         for col in 0..grid {
             let x = (col as f32 - (grid as f32 - 1.0) / 2.0) * lily_size;
             let y = ((grid as f32 - 1.0) / 2.0 - row as f32) * lily_size;
-            create_lily(commands, asset_server, Vec3::new(x, y, -1.0), counter);
+            create_lily(commands, asset_server, Vec3::new(x, y, 0.0), counter);
             counter += 1;
         }
     }

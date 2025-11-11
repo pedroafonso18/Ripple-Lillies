@@ -1,5 +1,6 @@
-use bevy::{asset::ron::de::Position, prelude::*};
+use bevy::prelude::*;
 use crate::actors::lillies::Lily;
+
 const FROG_VELOCITY : f32 = 550.;
 const PIXEL_RATIO : f32 = 3.;
 
@@ -51,6 +52,7 @@ pub fn update_frog(
             for (lily_tf, lily_comp) in lily_query.iter() {
                 if lily_comp.grid_pos == new_pos {
                     transform.translation = lily_tf.translation;
+                    transform.translation.z = 1.;
                     break;
                 }
             }
@@ -63,11 +65,12 @@ pub fn setup_frog(
     asset_server : &Res<AssetServer>,
 )
 {
-    commands.spawn((Sprite{
+    commands.spawn((
+        Sprite{
             image: asset_server.load("frogit.png"),
             ..Default::default()
-            },
-        Transform::IDENTITY.with_scale(Vec3::splat(PIXEL_RATIO)),
-        Frog{ velocity: 3. , position: 5})
-    );
+        },
+        Transform::from_xyz(0.0, 0.0, 1.0).with_scale(Vec3::splat(PIXEL_RATIO)),
+        Frog{ velocity: 3.0, position: 5}
+    ));
 }
