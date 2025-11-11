@@ -17,6 +17,6 @@ fn main() {
             })
             .set(ImagePlugin::default_nearest()))
         .add_systems(Startup, gamestate::gamestate::init_game)
-        .add_systems(Update, actors::frog::update_frog)
+        .add_systems(Update, (actors::frog::update_frog, gamestate::score::update_score, gamestate::score::update_score_text))
         .run();
 }

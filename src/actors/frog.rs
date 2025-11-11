@@ -1,17 +1,17 @@
-use bevy::prelude::*;
+use bevy::{asset::ron::de::Position, prelude::*};
 use crate::actors::lillies::Lily;
 const FROG_VELOCITY : f32 = 550.;
+const PIXEL_RATIO : f32 = 3.;
 
 #[derive(Component)]
 pub struct Frog{
     pub velocity : f32,
-    pub direction : Vec3,
     pub position : u8,
 }
 
 pub fn update_frog(
     mut frog_query : Query<(&mut Frog, &mut Transform)>,
-    lily_query: Query<(&Transform, &Lily)>,
+    lily_query: Query<(&Transform, &Lily), Without<Frog>>,
     keys : Res<ButtonInput<KeyCode>>,
 )
 {
@@ -56,4 +56,18 @@ pub fn update_frog(
             }
         }
     }
+}
+
+pub fn setup_frog(
+    commands : &mut Commands,
+    asset_server : &Res<AssetServer>,
+)
+{
+    commands.spawn((Sprite{
+            image: asset_server.load("frogit.png"),
+            ..Default::default()
+            },
+        Transform::IDENTITY.with_scale(Vec3::splat(PIXEL_RATIO)),
+        Frog{ velocity: 3. , position: 5})
+    );
 }
