@@ -5,6 +5,9 @@ const FROG_VELOCITY : f32 = 550.;
 const PIXEL_RATIO : f32 = 3.;
 
 #[derive(Component)]
+pub struct AnimationTimer(Timer);
+
+#[derive(Component)]
 pub struct Frog{
     pub velocity : f32,
     pub position : u8,
@@ -67,9 +70,10 @@ pub fn setup_frog(
 {
     commands.spawn((
         Sprite{
-            image: asset_server.load("frogit.png"),
+            image: asset_server.load("frog-front1.png"),
             ..Default::default()
         },
+        AnimationTimer(Timer::from_seconds(0.5, TimerMode::Repeating)), 
         Transform::from_xyz(0.0, 0.0, 1.0).with_scale(Vec3::splat(PIXEL_RATIO)),
         Frog{ velocity: 3.0, position: 5}
     ));
