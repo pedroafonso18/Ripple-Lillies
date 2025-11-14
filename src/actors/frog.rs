@@ -11,8 +11,8 @@ pub struct Frog{
 }
 
 pub fn update_frog(
-    mut frog_query : Query<(&mut Frog, &mut Transform)>,
-    lily_query: Query<(&Transform, &Lily), Without<Frog>>,
+    mut frog_query : Query<(&mut Frog, &mut Transform), Without<Lily>>,
+    lily_query: Query<(&mut Lily, &mut Transform), Without<Frog>>,
     keys : Res<ButtonInput<KeyCode>>,
 )
 {
@@ -49,7 +49,7 @@ pub fn update_frog(
 
         if new_pos != player.position {
             player.position = new_pos;
-            for (lily_tf, lily_comp) in lily_query.iter() {
+            for (lily_comp, lily_tf) in lily_query.iter() {
                 if lily_comp.grid_pos == new_pos {
                     transform.translation = lily_tf.translation;
                     transform.translation.z = 1.;

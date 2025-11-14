@@ -9,7 +9,7 @@ pub fn init_game(
     asset_server : Res<AssetServer>,
 )
 {
-    let background = asset_server.load("background.gif");
+    let background = asset_server.load("background.jpg");
     commands.spawn((Sprite {
         image: background,
         ..Default::default()
