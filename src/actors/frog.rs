@@ -11,6 +11,7 @@ pub struct AnimationTimer(Timer);
 pub struct Frog{
     pub velocity : f32,
     pub position : u8,
+    pub health : u8
 }
 
 pub fn update_frog(
@@ -49,15 +50,18 @@ pub fn update_frog(
                 new_pos = new_pos + GRID;
             }
         }
-
+        let mut pos_changed : bool = false;
         if new_pos != player.position {
-            player.position = new_pos;
             for (lily_comp, lily_tf) in lily_query.iter() {
                 if lily_comp.grid_pos == new_pos {
                     transform.translation = lily_tf.translation;
                     transform.translation.z = 1.;
+                    pos_changed = true;
                     break;
                 }
+            }
+            if pos_changed {
+                player.position = new_pos;
             }
         }
     }
@@ -75,6 +79,7 @@ pub fn setup_frog(
         },
         AnimationTimer(Timer::from_seconds(0.5, TimerMode::Repeating)), 
         Transform::from_xyz(0.0, 0.0, 1.0).with_scale(Vec3::splat(PIXEL_RATIO)),
-        Frog{ velocity: 3.0, position: 5}
+        Frog{ velocity: 3.0, position: 5, health: 3}
     ));
+
 }

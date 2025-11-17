@@ -1,3 +1,4 @@
+use std::time::Duration;
 use bevy::prelude::*;
 use rand::{self, Rng};
 use crate::gamestate::gamestate::get_coordinate_grid;
@@ -20,12 +21,20 @@ pub fn spawn_trash(
     asset_server : Res<AssetServer>,
     time : Res<Time>,
     mut timer : ResMut<TrashSpawnTimer>,
+    frog_query : Query<&mut Frog, Without<Trash>>
 )
 {
     if timer.0.tick(time.delta()).just_finished() {
         let mut rng = rand::rng();
         let trash_number = rng.random_range(1..4);
-        let spawn_tile = rng.random_range(0..25);
+        let mut spawn_tile = rng.random_range(0..25);
+        if let Ok(player) = frog_query.single() {
+            if player.position == spawn_tile && spawn_tile != 25 {
+                spawn_tile -= 1;
+            } else if player.position == spawn_tile && spawn_tile != 0 {
+                spawn_tile += 1;
+            }
+        }
         let image_str = format!("trash{}.png", trash_number);
         let pos = get_coordinate_grid(&spawn_tile);
         commands.spawn((
@@ -37,11 +46,22 @@ pub fn spawn_trash(
             TrashTimer(Timer::from_seconds(5.0, TimerMode::Once)), 
             Transform::from_xyz(pos.x,pos.y,pos.z).with_scale(Vec3::splat(3.))
         ));
+        const MIN_INTERVAL: f32 = 0.2;
+        const MAX_INTERVAL: f32 = 3.0;
+        const DIFFICULTY_RATE: f32 = 0.05;
+
+        let elapsed = time.elapsed_secs();
+
+        let new_interval = (MAX_INTERVAL - DIFFICULTY_RATE * elapsed)
+            .max(MIN_INTERVAL);
+
+        timer.0.set_duration(Duration::from_secs_f32(new_interval));
+        timer.0.reset();
     }
 }
 
 pub fn setup_trash(
-    commands : &mut Commands,
+    commands : &mut Commands
 )
 {
     commands.insert_resource(TrashSpawnTimer(Timer::from_seconds(3.0, TimerMode::Repeating)));
@@ -112,7 +132,8 @@ pub fn remove_trash(
     mut commands: Commands,
     time: Res<Time>,
     mut trash_query: Query<(Entity, &mut TrashTimer, &mut Trash)>,
-    mut lily_query: Query<(Entity, &mut Lily)>
+    mut lily_query: Query<(Entity, &mut Lily)>,
+    mut frog_query: Query<&mut Frog>
 )
 {
     for (entity, mut timer, trash) in trash_query.iter_mut() {
@@ -121,6 +142,9 @@ pub fn remove_trash(
             for (lily_entity, lily) in lily_query.iter_mut() {
                 if lily.grid_pos == trash.grid_pos {
                     commands.entity(lily_entity).despawn();
+                    if let Ok(mut frog) = frog_query.single_mut() {
+                        frog.health -= 1;
+                    }
                 }
             }
         }
