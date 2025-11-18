@@ -23,7 +23,11 @@ pub fn update_score(
 }
 
 
-pub fn update_score_text(score: Res<Score>, mut query: Query<&mut Text, With<ScoreText>>) {
+pub fn update_score_text(
+    score: Res<Score>,
+    mut query: Query<&mut Text, With<ScoreText>>
+)
+{
     if score.is_changed() {
         if let Ok(mut text) = query.single_mut() {
             text.0 = format!("{}",score.value);
@@ -48,7 +52,23 @@ pub fn setup_score(
         },
         TextColor {
             0 : Color::WHITE
+        },
+        Node {
+            position_type: PositionType::Absolute,
+            top: Val::Px(10.0),
+            left: Val::Percent(95.0),
+            ..Default::default()
         }
     ))
     .insert(ScoreText);
+}
+
+pub fn freeze_score(
+    mut commands : Commands,
+    mut query: Query<(Entity, &mut Text), With<ScoreText>>
+)
+{
+    if let Ok((entity, mut scoreText)) = query.single_mut() {
+        commands.entity(entity).despawn();
+    }
 }

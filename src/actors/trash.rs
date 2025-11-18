@@ -143,7 +143,9 @@ pub fn remove_trash(
                 if lily.grid_pos == trash.grid_pos {
                     commands.entity(lily_entity).despawn();
                     if let Ok(mut frog) = frog_query.single_mut() {
-                        frog.health -= 1;
+                        if frog.health > 0 {
+                            frog.health -= 1;
+                        }
                     }
                 }
             }

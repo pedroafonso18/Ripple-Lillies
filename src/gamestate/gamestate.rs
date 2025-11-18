@@ -4,6 +4,13 @@ use crate::gamestate::score::setup_score;
 use crate::actors::frog::setup_frog;
 use crate::actors::trash::setup_trash;
 
+#[derive(States, Debug, Default, Clone, PartialEq, Eq, Hash)]
+pub enum GameState {
+    #[default]
+    Playing,
+    Dead
+}
+
 pub fn init_game(
     mut commands : Commands,
     asset_server : Res<AssetServer>,
